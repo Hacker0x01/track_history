@@ -31,7 +31,11 @@ module TrackHistory
     # Default model name is ModelHistory
     def track_history(options = {}, &block)
       options.assert_valid_keys(:model_name, :table_name, :reference)
-      define_historical_model(self, options[:model_name], options[:table_name], options.has_key?(:reference) ? !!options[:reference] : true, &block)
+      begin
+        define_historical_model(self, options[:model_name], options[:table_name], options.has_key?(:reference) ? !!options[:reference] : true, &block)
+      rescue ActiveRecord::NoDatabaseError, PG::ConnectionBad
+        nil
+      end
     end
 
     def historical_class
